@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <el-form :model="form" label-width="120px">
-            <el-form-item label="Insert your name">
+        <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+            <el-form-item prop="name" label="Insert your name">
                 <el-input
                     v-model="form.name"
                     placeholder="Please write your name"
@@ -96,6 +96,14 @@ export default {
         },
     },
     data() {
+        var customValidate = (rule, value, callback) => {
+            var letters = /^[A-Za-z]+$/
+            if (!this.form.name.match(letters)) {
+                callback(new Error('Please provide only letters'))
+            } else {
+                callback()
+            }
+        }
         return {
             form: {
                 name: '',
@@ -106,10 +114,24 @@ export default {
             dialogUnsuccessful: false,
             dialogAlreadyWon: false,
             hasWon: '',
+            rules: {
+                name: [
+                    { validator: customValidate, trigger: 'blur' },
+                    {
+                        min: 3,
+                        message: 'Length should be at least 2 characters',
+                        trigger: 'blur',
+                    },
+                ],
+            },
         }
     },
     methods: {
-        handleSubmit() {
+        async handleSubmit() {
+            let valid = await this.$refs.form.validate()
+            if (!valid) {
+                return
+            }
             let isLucky = this.luckyNames.some((el) => {
                 return el.name == this.form.name
             })
@@ -117,14 +139,11 @@ export default {
             this.hasWon = JSON.parse(localStorage.getItem('winningName'))
             if (this.hasWon === this.form.name) {
                 this.dialogAlreadyWon = true
-                console.log('Go away')
             } else {
                 if (isLucky) {
                     this.dialogSuccess = true
-                    console.log(hasWon)
                 } else {
                     this.dialogUnsuccessful = true
-                    console.log(hasWon)
                 }
             }
         },
