@@ -15,7 +15,7 @@
             </el-form-item>
         </el-form>
         <el-dialog
-            v-model="dialogSuccessVisible"
+            v-model="dialogSuccess"
             title="Lucky"
             width="30%"
             :before-close="handleClose"
@@ -34,7 +34,7 @@
             </template>
         </el-dialog>
         <el-dialog
-            v-model="dialogUnsuccessfulVisible"
+            v-model="dialogUnsuccessful"
             title="Try again"
             width="30%"
             :before-close="handleClose"
@@ -49,14 +49,30 @@
                 </span>
             </template>
         </el-dialog>
+        <el-dialog
+            v-model="dialogAlreadyWon"
+            title="Already won"
+            width="30%"
+            :before-close="handleClose"
+        >
+            <span
+                >I'm sorry, {{ form.name }} has already received their prize
+                today!.</span
+            >
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button type="primary" @click="handleOk"> OK </el-button>
+                </span>
+            </template>
+        </el-dialog>
         <el-card class="box-card">
             <template #header>
                 <div class="card-header">
                     <span>Today's Winners</span>
                 </div>
             </template>
-            <div v-for="el in todaysWinners" :key="el" class="text item">
-                {{ 'Name: ' + el.name }}
+            <div v-for="el in winners" :key="el" class="text item">
+                <h5>{{ el }}</h5>
             </div>
         </el-card>
     </div>
@@ -74,6 +90,11 @@ export default {
     components: {
         NameSearchResponse,
     },
+    computed: {
+        winners() {
+            return this.$store.state.winners
+        },
+    },
     data() {
         return {
             form: {
@@ -81,32 +102,48 @@ export default {
             },
             luckyNames: [],
             todaysWinners: [],
-            dialogSuccessVisible: false,
-            dialogUnsuccessfulVisible: false,
+            dialogSuccess: false,
+            dialogUnsuccessful: false,
+            dialogAlreadyWon: false,
+            hasWon: '',
         }
     },
     methods: {
         handleSubmit() {
-            let isLucky = this.luckyNames.some((spec) => {
-                return spec.name == this.form.name
+            let isLucky = this.luckyNames.some((el) => {
+                return el.name == this.form.name
             })
-            if (isLucky) {
-                this.dialogSuccessVisible = true
+
+            this.hasWon = JSON.parse(localStorage.getItem('winningName'))
+            if (this.hasWon === this.form.name) {
+                this.dialogAlreadyWon = true
+                console.log('Go away')
             } else {
-                this.dialogUnsuccessfulVisible = true
+                if (isLucky) {
+                    this.dialogSuccess = true
+                    console.log(hasWon)
+                } else {
+                    this.dialogUnsuccessful = true
+                    console.log(hasWon)
+                }
             }
         },
+        nameAlreadyWon() {
+            this.hasWon = JSON.parse(localStorage.getItem('winningName'))
+        },
         handleAccept() {
-            this.todaysWinners.push({ name: this.form.name })
+            this.$store.commit('addWinner', this.form.name)
+            localStorage.setItem('winningName', JSON.stringify(this.form.name))
             this.form.name = ''
-            this.dialogSuccessVisible = false
+            this.dialogSuccess = false
         },
         handleReject() {
-            this.dialogSuccessVisible = false
+            this.dialogSuccess = false
         },
         handleOk() {
             this.form.name = ''
-            this.dialogUnsuccessfulVisible = false
+            this.dialogUnsuccessful = false
+            this.dialogAlreadyWon = false
         },
         handleClose(done) {
             ElMessageBox.confirm('Are you sure to close this dialog?')

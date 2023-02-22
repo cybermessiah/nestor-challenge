@@ -1,9 +1,15 @@
 import { createStore } from 'vuex'
 
 export default createStore({
-  state: () => ({}),
-  getters: {},
-  actions: {},
-  mutations: {},
-  modules: {}
+    state: () => ({
+        winners: [],
+    }),
+    getters: {},
+    actions: {},
+    mutations: {
+        addWinner: (state, payload) => {
+            state.winners.push(payload)
+        },
+    },
+    modules: {},
 })
