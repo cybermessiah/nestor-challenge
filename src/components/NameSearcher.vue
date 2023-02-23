@@ -68,7 +68,7 @@
         <el-card class="box-card">
             <template #header>
                 <div class="card-header">
-                    <span>Today's Winners</span>
+                    <span>Lit of winners</span>
                 </div>
             </template>
             <div v-for="el in winners" :key="el" class="text item">
@@ -92,7 +92,7 @@ export default {
     },
     computed: {
         winners() {
-            return this.$store.state.winners
+            return this.$store.getters.getList
         },
     },
     data() {
@@ -151,7 +151,8 @@ export default {
             this.hasWon = JSON.parse(localStorage.getItem('winningName'))
         },
         handleAccept() {
-            this.$store.commit('addWinner', this.form.name)
+            // this.$store.commit('addWinner', this.form.name)
+            this.$store.dispatch('updateList', this.form.name)
             localStorage.setItem('winningName', JSON.stringify(this.form.name))
             this.form.name = ''
             this.dialogSuccess = false

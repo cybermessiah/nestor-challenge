@@ -4,8 +4,16 @@ export default createStore({
     state: () => ({
         winners: [],
     }),
-    getters: {},
-    actions: {},
+    getters: {
+        getList(state) {
+            return state.winners
+        },
+    },
+    actions: {
+        updateList(context, payload) {
+            context.commit('addWinner', payload)
+        },
+    },
     mutations: {
         addWinner: (state, payload) => {
             state.winners.push(payload)
