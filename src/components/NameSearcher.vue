@@ -1,19 +1,25 @@
 <template>
     <div class="container">
         <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+            <!-- {{ dayNames }} -->
+            <!-- {{ nextDayNames }} -->
             <el-form-item prop="name" label="Insert your name">
                 <el-input
                     v-model="form.name"
                     placeholder="Please write your name"
                 />
             </el-form-item>
-
             <el-form-item>
                 <el-button type="primary" @click="handleSubmit"
                     >Check</el-button
                 >
             </el-form-item>
         </el-form>
+        <el-form-item>
+            <el-button type="primary" @click="handleNextDay"
+                >Next Day</el-button
+            >
+        </el-form-item>
         <el-dialog
             v-model="dialogSuccess"
             title="Lucky"
@@ -71,7 +77,7 @@
 
 <script>
 import NameSearchResponse from '@/components/NameSearchResponse.vue'
-import { getAll } from '@/api/peopleApi.js'
+import { getAll, getRandomPeople } from '@/api/peopleApi.js'
 import { toRaw } from 'vue'
 import { ElMessageBox } from 'element-plus'
 
@@ -99,6 +105,8 @@ export default {
                 name: '',
             },
             luckyNames: [],
+            dayNames: [],
+            nextDayNames: [],
             dialogSuccess: false,
             dialogUnsuccessful: false,
             dialogAlreadyWon: false,
@@ -121,7 +129,7 @@ export default {
             if (!valid) {
                 return
             }
-            let isLucky = this.luckyNames.some((el) => {
+            let isLucky = this.dayNames.some((el) => {
                 return el.name == this.form.name
             })
 
@@ -166,9 +174,23 @@ export default {
             const res = await getAll()
             this.luckyNames = toRaw(res)
         },
+        getPeoplePerDay() {
+            const res = getRandomPeople()
+            this.dayNames = res
+        },
+        async getPeopleNextDay() {
+            const res = await getAll()
+            const tempPoolNames = res.filter(
+                (el) => !this.dayNames.includes(el),
+            )
+            const shuffled = [...tempPoolNames].sort(() => 0.5 - Math.random())
+            this.nextDayNames = shuffled.slice(0, 10)
+        },
     },
     mounted() {
         this.getData()
+        this.getPeoplePerDay()
+        this.getPeopleNextDay()
     },
 }
 import { reactive } from 'vue'
