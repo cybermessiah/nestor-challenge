@@ -9,6 +9,7 @@
             below and we will tell you!
         </p>
         <name-searcher></name-searcher>
+        <winners-list></winners-list>
     </div>
 </template>
 

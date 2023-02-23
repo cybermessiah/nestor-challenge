@@ -1,11 +1,10 @@
 <template>
     <div>
         <div class="container">
-            <h2>Winners Page</h2>
             <el-card class="box-card">
                 <template #header>
                     <div class="card-header">
-                        <span>Today's Winners</span>
+                        <span>Winners list</span>
                     </div>
                 </template>
                 <div v-for="el in winners" :key="el" class="text item">
@@ -23,11 +22,6 @@ export default {
         winners() {
             return this.$store.getters.getList
         },
-    },
-    data() {
-        return {
-            title: 'details',
-        }
     },
 }
 </script>

@@ -65,16 +65,6 @@
                 </span>
             </template>
         </el-dialog>
-        <el-card class="box-card">
-            <template #header>
-                <div class="card-header">
-                    <span>Lit of winners</span>
-                </div>
-            </template>
-            <div v-for="el in winners" :key="el" class="text item">
-                <h5>{{ el }}</h5>
-            </div>
-        </el-card>
     </div>
     <name-search-response></name-search-response>
 </template>
@@ -109,7 +99,6 @@ export default {
                 name: '',
             },
             luckyNames: [],
-            todaysWinners: [],
             dialogSuccess: false,
             dialogUnsuccessful: false,
             dialogAlreadyWon: false,
@@ -151,7 +140,6 @@ export default {
             this.hasWon = JSON.parse(localStorage.getItem('winningName'))
         },
         handleAccept() {
-            // this.$store.commit('addWinner', this.form.name)
             this.$store.dispatch('updateList', this.form.name)
             localStorage.setItem('winningName', JSON.stringify(this.form.name))
             this.form.name = ''
